@@ -1,9 +1,10 @@
 import ReviewList from "./ReviewList";
 import { useCallback, useState, useEffect } from "react";
-import { createReview, deletereview, getReviews, updateReview } from "../api";
+import { createReview, deleteReview, getReviews, updateReview } from "../api";
 import ReviewForm from "./ReviewForm";
 import useAsync from '../hooks/useAsync';
-import LocaleContext from '../contexts/LocaleContext';
+import { LocaleProvider } from '../contexts/LocaleContext';
+import LocaleSelect from "./LocaleSelect";
 
 const LIMIT = 6;
 
@@ -63,19 +64,22 @@ export default function App() {
   }, [order, handleLoad]);
 
   return (
-    <div>
+    <LocaleProvider defaultValue={'ko'}>
       <div>
-        <button onClick={handleNewsClick}>최신순</button>
-        <button onClick={handleBestClick}>평점순</button>
+        <LocaleSelect />
+        <div>
+          <button onClick={handleNewsClick}>최신순</button>
+          <button onClick={handleBestClick}>평점순</button>
+        </div>
+        <ReviewForm onSubmit={createReview} onSubmitSuccess={handleCreateSuccess} />
+        <ReviewList items={sortedItems} onDelete={handleDelete} onUpdate={updateReview} onUpdateSuccess={handleUpdateSuccess} />
+        {hasNext && (
+          <button disabled={isLoading} onClick={handleLoadMore}>
+          더보기
+        </button>
+        )}
+        {loadingError?.message && <span>{loadingError.message}</span>}
       </div>
-      <ReviewForm onSubmit={createReview} onSubmitSuccess={handleCreateSuccess} />
-      <ReviewList items={sortedItems} onDelete={handleDelete} onUpdate={updateReview} onUpdateSuccess={handleUpdateSuccess} />
-      {hasNext && (
-        <button disabled={isLoading} onClick={handleLoadMore}>
-        더보기
-      </button>
-      )}
-      {loadingError?.message && <span>{loadingError.message}</span>}
-    </div>
+    </LocaleProvider>
   );
 }
