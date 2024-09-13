@@ -1,4 +1,4 @@
-import { createContext, useContext } from "react";
+import { useState, createContext, useContext } from "react";
 
 const LocaleContext = createContext();
 
